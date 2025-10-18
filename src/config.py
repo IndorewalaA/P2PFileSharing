@@ -47,6 +47,7 @@ def parse_peer_info():
                     has_file=lambda x: True if int(peer_info[3])==1 else False
                 )
             )
+        return peers_list
 
 def main():
     test = parse_config()
