@@ -44,7 +44,7 @@ def parse_peer_info():
                     peer_ID=int(peer_info[0]),
                     host_name=peer_info[1],
                     listening_port=int(peer_info[2]),
-                    has_file=lambda x: True if int(peer_info[3])==1 else False
+                    has_file = True if int(peer_info[3]) == 1 else False
                 )
             )
         return peers_list
