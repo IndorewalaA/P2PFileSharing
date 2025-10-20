@@ -10,6 +10,8 @@ class Common:
     file_name: str
     file_size: int
     piece_size: int
+    num_pieces = int
+    last_piece_size = int
 
 def parse_config() -> Common:
     # store everything in a list to store into obj later
@@ -23,7 +25,9 @@ def parse_config() -> Common:
         opt_unchoking_interval=int(common_list[2]),
         file_name=common_list[3],
         file_size=int(common_list[4]),
-        piece_size=int(common_list[5])
+        piece_size=int(common_list[5]),
+        num_pieces=int(common_list[4])/int(common_list[5]),
+        last_piece_size=int(common_list[4])%int(common_list[5])
     )
     
 # reads PeerInfo.cfg
