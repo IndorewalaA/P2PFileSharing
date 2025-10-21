@@ -47,6 +47,8 @@ def decode_handshake(data: bytes) -> int:
         raise ValueError("Bad Handshake! Check length or header + zeros")
     return struct.unpack("!I", data[28:32])[0]
 
+# msg length (4), msg type (1), msg payload (variable size)
+
 def encode_message(type: int, payload: bytes=b"") -> bytes:
     return struct.pack("!I", 1 + len(payload), + bytes([type]) + payload)
 
