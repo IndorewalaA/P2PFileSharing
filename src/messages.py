@@ -1,9 +1,9 @@
 # Handshake Section
 
 # 32 bytes total
-HANDSHAKE_HEADER = b"P2PFILESHARINGPROJ" # 18 bits
-ZERO_BITS = b"\x00" * 10 # 10 bits
-HANDSHAKE_FIRST = HANDSHAKE_HEADER + ZERO_BITS
+HANDSHAKE_HEADER = b"P2PFILESHARINGPROJ" # 18 bytes
+ZERO_BYTES = b"\x00" * 10 # 10 bytes
+HANDSHAKE_FIRST = HANDSHAKE_HEADER + ZERO_BYTES # 28 bytes
 # 4 bit peer ID left
 
 # After handshakes, message
@@ -40,7 +40,7 @@ PIECE = 7 # first 4-byte piece index field in payload, then raw piece bytes (ful
 # Decode: Unpacks the 4-byte object as a Python Integer
 
 def encode_handshake(peer_id: int) -> bytes: # Structures 32-byte handshake
-    return HANDSHAKE_HEADER + ZERO_BITS + struct.pack("!I", peer_id) 
+    return HANDSHAKE_HEADER + ZERO_BYTES + struct.pack("!I", peer_id) 
 
 def decode_handshake(data: bytes) -> int:
     if(len(data) != 32 or data[:28] != HANDSHAKE_FIRST): # Must be 32 bytes 
@@ -50,6 +50,16 @@ def decode_handshake(data: bytes) -> int:
 # msg length (4), msg type (1), msg payload (variable size)
 
 def encode_message(type: int, payload: bytes=b"") -> bytes:
-    return struct.pack("!I", 1 + len(payload), + bytes([type]) + payload)
+    return struct.pack("!I", 1 + len(payload)) + bytes([type]) + payload
 
 
+def decode_message(buffer: bytearray):
+    if(len(buffer) < 4):
+        return None
+    (length,) = struct.unpack("!I", buffer[:4])
+    if(len(buffer) < 4 + length):
+        return None
+    type = buffer[4]
+    payload = bytes(buffer[5:4 + length])
+    del buffer[:4 + length]
+    return type, payload
