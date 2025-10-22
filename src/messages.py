@@ -1,3 +1,4 @@
+import struct
 # Handshake Section
 
 # 32 bytes total
