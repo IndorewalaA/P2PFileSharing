@@ -53,7 +53,6 @@ def decode_handshake(data: bytes) -> int:
 def encode_message(type: int, payload: bytes=b"") -> bytes:
     return struct.pack("!I", 1 + len(payload)) + bytes([type]) + payload
 
-
 def decode_message(buffer: bytearray):
     if(len(buffer) < 4):
         return None
