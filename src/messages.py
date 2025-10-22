@@ -72,7 +72,7 @@ PIECE = 7 # first 4-byte piece index field in payload, then raw piece bytes (ful
 def encode_handshake(peer_id: int) -> bytes: # Structures 32-byte handshake
     return HANDSHAKE_HEADER + ZERO_BYTES + struct.pack("!I", peer_id) 
 
-def decode_handshake(data: bytes) -> int:
+def decode_handshake(data: bytes) -> int: # Basically gets the peer_id as an int
     if(len(data) != 32 or data[:28] != HANDSHAKE_FIRST): # Must be 32 bytes 
         raise ValueError("Bad Handshake! Check length or header + zeros")
     return struct.unpack("!I", data[28:32])[0]
