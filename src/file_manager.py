@@ -17,3 +17,14 @@ class FileManager:
         with open(self.file_path, 'r+b') as f:
             f.seek(index * self.piece_size)
             f.write(data)
+
+    def get_piece(self, index: int) -> bytes:
+        with open(self.file_path, 'rb') as f:
+            f.seek(index * self.piece_size)
+            return f.read(self.piece_size)
+
+    def is_complete(self, total_pieces: int) -> bool:
+        if not os.path.exists(self.file_path):
+            return False
+        file_size = os.path.getsize(self.file_path)
+        return file_size >= (total_pieces - 1) * self.piece_size
