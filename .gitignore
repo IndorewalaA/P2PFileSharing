@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+peer_1001/
+peer_1002/
+peer_1003/

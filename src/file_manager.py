@@ -7,6 +7,8 @@ class FileManager:
 
     def split_file(self) -> list[bytes]:
         pieces = []
+        if not os.path.exists(self.file_path):
+            return pieces
         with open(self.file_path, 'rb') as f:
             while chunk := f.read(self.piece_size):
                 pieces.append(chunk)
@@ -14,11 +16,16 @@ class FileManager:
 
     def write_piece(self, index: int, data: bytes):
         os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+        if not os.path.exists(self.file_path):
+            with open(self.file_path, 'wb') as f:
+                pass
         with open(self.file_path, 'r+b') as f:
             f.seek(index * self.piece_size)
             f.write(data)
 
     def get_piece(self, index: int) -> bytes:
+        if not os.path.exists(self.file_path):
+            return b""
         with open(self.file_path, 'rb') as f:
             f.seek(index * self.piece_size)
             return f.read(self.piece_size)
