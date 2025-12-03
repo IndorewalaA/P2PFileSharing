@@ -5,7 +5,13 @@ class PeerState:
     def __init__(self, peer_id: int, total_pieces: int):
         self.peer_id = peer_id
         self.is_choked = True
+
+        # Receive Interested
         self.is_interested = False
+        
+        # Send Interested
+        self.our_interest = False
+        
         self.download_rate = 0.0
         self._last_bytes = 0
         self._last_time = time.time()

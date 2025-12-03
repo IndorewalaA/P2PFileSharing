@@ -28,7 +28,7 @@ class TransferManager:
                 break
 
             # if we are choked or not interested, wait
-            if ps.is_choked or not ps.is_interested:
+            if ps.is_choked or not ps.our_interest:
                 time.sleep(0.5)
                 continue
 

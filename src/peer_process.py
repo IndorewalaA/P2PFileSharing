@@ -233,14 +233,14 @@ class PeerProcess:
                 send_message(sock, INTERESTED)
             except Exception:
                 pass
-            ps.is_interested = True
+            ps.our_interest = True
             log(self.peer_id, f"sent the 'interested' message to {remote_id}.")
         else:
             try:
                 send_message(sock, NOT_INTERESTED)
             except Exception:
                 pass
-            ps.is_interested = False
+            ps.our_interest = False
             log(self.peer_id, f"sent the 'not interested' message to {remote_id}.")
 
     def _completion_watcher(self):
