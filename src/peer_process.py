@@ -159,6 +159,7 @@ class PeerProcess:
 
             if msg_type == BITFIELD:
                 ps.remote_bitfield.from_bytes(payload)
+                log(self.peer_id, f"received the 'bitfield' message from {remote_id}.")
                 self._evaluate_interest(remote_id)
 
             elif msg_type == HAVE:
