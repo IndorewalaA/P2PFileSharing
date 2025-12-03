@@ -1,4 +1,4 @@
-Project By: Brianna Chua, 
+Project By: Brianna Chua, Abdul Indorewala, Dylan Tran, 
 
 
 
