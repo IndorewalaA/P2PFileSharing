@@ -211,6 +211,7 @@ class PeerProcess:
                     for pid, s in list(self.conn_map.items()):
                         try:
                             send_message(s, HAVE, piece_index.to_bytes(4, "big"))
+                            log(self.peer_id, f"sent the 'have' message to peer {remote_id}")
                         except Exception:
                             pass
                 self._evaluate_interest(remote_id)
