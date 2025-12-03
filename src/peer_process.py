@@ -102,8 +102,11 @@ class PeerProcess:
                     sock.settimeout(None)
                     # send handshake and wait reply
                     sock.sendall(encode_handshake(self.peer_id))
+                    log(self.peer_id, f"sent a handshake to Peer {p.peer_ID}.")
                     resp = sock.recv(32)
                     remote_id = decode_handshake(resp)
+                    log(self.peer_id, f"received a handshake from Peer {remote_id}.")
+
                     if remote_id != p.peer_ID:
                         sock.close()
                         break
@@ -127,8 +130,10 @@ class PeerProcess:
         try:
             data = conn.recv(32)
             remote_id = decode_handshake(data)
+            log(self.peer_id, f"received a handshake from Peer {remote_id}.")
             # send handshake back
             conn.sendall(encode_handshake(self.peer_id))
+            log(self.peer_id, f"sent a handshake to Peer {remote_id}.")
             with self.conn_lock:
                 self.conn_map[remote_id] = conn
             log(self.peer_id, f"is connected from Peer {remote_id}.")
