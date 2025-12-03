@@ -5,12 +5,15 @@ class FileManager:
         self.file_path = file_path
         self.piece_size = piece_size
 
-    def split_file(self) -> list[bytes]:
+    def split_file(self) -> list:
         pieces = []
         if not os.path.exists(self.file_path):
             return pieces
         with open(self.file_path, 'rb') as f:
-            while chunk := f.read(self.piece_size):
+            while True:
+                chunk = f.read(self.piece_size)
+                if not chunk:
+                    break
                 pieces.append(chunk)
         return pieces
 
@@ -33,5 +36,5 @@ class FileManager:
     def is_complete(self, total_pieces: int) -> bool:
         if not os.path.exists(self.file_path):
             return False
-        file_size = os.path.getsize(self.file_path)
-        return file_size >= (total_pieces - 1) * self.piece_size
+        size = os.path.getsize(self.file_path)
+        return size >= (total_pieces - 1) * self.piece_size

@@ -43,12 +43,14 @@ HANDSHAKE_FIRST = HANDSHAKE_HEADER + ZERO_BYTES # 28 bytes
 
 # msg types
 # no payload types
-CHOKE = 0 
+CHOKE = 0
 UNCHOKE = 1
 INTERESTED = 2
 NOT_INTERESTED = 3
-
-HAVE = 4 # 4-byte piece index field in payload
+HAVE = 4
+BITFIELD = 5
+REQUEST = 6
+PIECE = 7
 
 BITFIELD = 5
 # N bytes of bitfield, bit i == 1 means that sender has piece i
@@ -69,12 +71,18 @@ PIECE = 7 # first 4-byte piece index field in payload, then raw piece bytes (ful
 # Encode: Packs the peer_id as a 4-byte object
 # Decode: Unpacks the 4-byte object as a Python Integer
 
-def encode_handshake(peer_id: int) -> bytes: # Structures 32-byte handshake
-    return HANDSHAKE_HEADER + ZERO_BYTES + struct.pack("!I", peer_id) 
+def encode_handshake(peer_id: int) -> bytes:
+    """Return a valid 32-byte handshake message for this peer_id."""
+    return HANDSHAKE_FIRST + struct.pack("!I", peer_id)
 
-def decode_handshake(data: bytes) -> int: # Basically gets the peer_id as an int
-    if(len(data) != 32 or data[:28] != HANDSHAKE_FIRST): # Must be 32 bytes 
-        raise ValueError("Bad Handshake! Check length or header + zeros")
+def decode_handshake(data: bytes) -> int:
+    """Extract peer ID from a 32-byte handshake. Raises ValueError if invalid."""
+    if len(data) != 32:
+        raise ValueError("Invalid handshake length")
+
+    if data[:28] != HANDSHAKE_FIRST:
+        raise ValueError("Invalid handshake header")
+
     return struct.unpack("!I", data[28:32])[0]
 
 # msg length (4), msg type (1), msg payload (variable size)
