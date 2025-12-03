@@ -28,7 +28,7 @@ class TransferManager:
                 break
 
             # if we are choked or not interested, wait
-            if ps.is_choked or not ps.is_interested:
+            if ps.is_choked or not ps.our_interest:
                 time.sleep(0.5)
                 continue
 
@@ -42,6 +42,7 @@ class TransferManager:
             idx = random.choice(missing)
             try:
                 send_message(conn, REQUEST, idx.to_bytes(4, "big"))
+                log(self.peer_id, f"requested piece {idx} from {remote_id}.")
             except Exception:
                 break
             time.sleep(0.2)

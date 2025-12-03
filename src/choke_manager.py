@@ -92,6 +92,15 @@ class ChokeManager:
 
     def _select_optimistic_neighbor(self):
         with self.lock:
+            if(self.optimistic_neighbor is not None 
+               and self.optimistic_neighbor not in self.preferred_neighbors 
+               and self.preferred_neighbor in self.conn_map
+            ):
+                try:
+                    send_message(self.conn_map[self.optimistic_neighbor], CHOKE)
+                except Exception:
+                    pass
+                
             # pick choked & interested peers
             candidates = [pid for pid, ps in self.peers_state.items() if ps.is_interested and ps.is_choked and pid in self.conn_map]
             if not candidates:
