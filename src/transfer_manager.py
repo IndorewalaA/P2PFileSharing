@@ -42,6 +42,7 @@ class TransferManager:
             idx = random.choice(missing)
             try:
                 send_message(conn, REQUEST, idx.to_bytes(4, "big"))
+                log(self.peer_id, f"requested piece {idx} from {remote_id}.")
             except Exception:
                 break
             time.sleep(0.2)
