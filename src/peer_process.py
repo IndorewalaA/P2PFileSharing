@@ -52,7 +52,7 @@ class PeerProcess:
 
     def start(self):
         log(self.peer_id, ("starts." 
-                           f"\nSet Variables:"
+                           f"\n\nSet Variables:"
                            f"\n--------------------------------"
                            f"\nConfig: Number of preferred neighbors = {self.config.num_pref_neighbors}, " 
                            f"\nUnchoking interval = {self.config.unchoking_interval} seconds, " 
@@ -60,7 +60,8 @@ class PeerProcess:
                            f"\nFile: {self.config.file_name}, "
                            f"\nFile size: {self.config.file_size} bytes, "
                            f"\nPiece size: {self.config.piece_size} bytes."
-                           f"\nInitial bitfield: {self.bitfield.to_bytes().hex()}"))
+                           f"\nInitial bitfield: {self.bitfield.to_bytes().hex()}"
+                           f"\n--------------------------------\n"))
         
         # start listening for incoming connections
         threading.Thread(target=self._listen_for_incoming, daemon=True).start()
