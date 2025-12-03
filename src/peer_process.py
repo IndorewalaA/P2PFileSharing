@@ -110,7 +110,8 @@ class PeerProcess:
                         self.conn_map[remote_id] = sock
                     log(self.peer_id, f"makes a connection to Peer {remote_id}.")
                     # send bitfield only if we have any pieces
-                    self._send_our_bitfield_if_any(sock)
+                    # send remote_id to log
+                    self._send_our_bitfield_if_any(sock, remote_id)
                     # start message listener for this connection
                     threading.Thread(target=self._message_listener, args=(remote_id, sock), daemon=True).start()
                     connected = True
@@ -131,7 +132,7 @@ class PeerProcess:
                 self.conn_map[remote_id] = conn
             log(self.peer_id, f"is connected from Peer {remote_id}.")
             # send our bitfield only if we have pieces
-            self._send_our_bitfield_if_any(conn)
+            self._send_our_bitfield_if_any(conn, remote_id)
             threading.Thread(target=self._message_listener, args=(remote_id, conn), daemon=True).start()
         except Exception as e:
             try:
@@ -139,11 +140,12 @@ class PeerProcess:
             except Exception:
                 pass
 
-    def _send_our_bitfield_if_any(self, sock: socket.socket):
+    def _send_our_bitfield_if_any(self, sock: socket.socket, remote_id: int):
         payload = self.bitfield.to_bytes()
         if any(b != 0 for b in payload):
             try:
                 send_message(sock, BITFIELD, payload)
+                log(self.peer_id, f"sent the 'bitfield' message to {remote_id}.")
             except Exception:
                 pass
 
