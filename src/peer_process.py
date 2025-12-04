@@ -14,12 +14,15 @@ from logger import log
 from file_manager import FileManager
 import os
 
+# peer
 class PeerProcess:
     def __init__(self, peer_id: int):
         self.peer_id = peer_id
         self.config = parse_config()
         self.peers = parse_peer_info()
+        # map of peers
         self.peer_map = {p.peer_ID: p for p in self.peers}
+        # calculates total pieces based off the file size
         total_pieces = (self.config.file_size + self.config.piece_size - 1) // self.config.piece_size
 
         # ensure peer folder exists
@@ -145,9 +148,10 @@ class PeerProcess:
                 conn.close()
             except Exception:
                 pass
-
+    # sends bitfield if we have any of the file pieces
     def _send_our_bitfield_if_any(self, sock: socket.socket, remote_id: int):
         payload = self.bitfield.to_bytes()
+        # if any bit isnt 0
         if any(b != 0 for b in payload):
             try:
                 send_message(sock, BITFIELD, payload)
@@ -155,13 +159,14 @@ class PeerProcess:
             except Exception:
                 pass
 
+    # listens 
     def _message_listener(self, remote_id: int, sock: socket.socket):
         ps = self.peers_state[remote_id]
         while self.running:
             try:
                 msg_type, payload = recv_message(sock)
             except Exception:
-                break
+                break # if connection suddenly lost
 
             if msg_type == BITFIELD:
                 ps.remote_bitfield.from_bytes(payload)
@@ -228,6 +233,7 @@ class PeerProcess:
                 del self.conn_map[remote_id]
 
     def _evaluate_interest(self, remote_id: int):
+        # check if any peers have pieces that we desire
         ps = self.peers_state[remote_id]
         sock = None
         with self.conn_lock:
@@ -250,6 +256,7 @@ class PeerProcess:
             ps.our_interest = False
             log(self.peer_id, f"sent the 'not interested' message to {remote_id}.")
 
+    # checks to see if all peers have all chunks of the file. shutsdown if true
     def _completion_watcher(self):
         while self.running:
             time.sleep(2)
@@ -269,6 +276,7 @@ class PeerProcess:
             except Exception:
                 continue
 
+    # shuts down
     def shutdown(self):
         self.running = False
         self.choke_manager.stop()

@@ -19,34 +19,42 @@ class ChokeManager:
         self.preferred_neighbors = set()
         self.optimistic_neighbor = None
 
+    # starts timers for normal unchoking and optimistic unchoking
     def start(self):
         threading.Thread(target=self._choke_unchoke_cycle, daemon=True).start()
         threading.Thread(target=self._optimistic_unchoke_cycle, daemon=True).start()
 
+    # stops
     def stop(self):
         self.running = False
 
+    # for normal choke/unchoke
     def _choke_unchoke_cycle(self):
+        # while program is running
         while self.running:
             time.sleep(self.config.unchoking_interval)
+            # attempt to select new preferred neighbors
             try:
                 self._select_preferred_neighbors()
             except Exception:
                 continue
 
+    # optimistic unchoking
     def _optimistic_unchoke_cycle(self):
         while self.running:
             time.sleep(self.config.opt_unchoking_interval)
+            # selects optimistic neighbor (randomly)
             try:
                 self._select_optimistic_neighbor()
             except Exception:
                 continue
 
+    # selects preferred neighbors for choke/unchoke cycle
     def _select_preferred_neighbors(self):
         with self.lock:
             # consider only peers that are connected and interested
             available = [(pid, ps.download_rate) for pid, ps in self.peers_state.items() if ps.is_interested and pid in self.conn_map]
-
+            # if no one else is interested, preferences are reset
             if not available:
                 for pid in list(self.preferred_neighbors):
                     if pid != self.optimistic_neighbor and pid in self.conn_map:
@@ -60,7 +68,7 @@ class ChokeManager:
 
             k = self.config.num_pref_neighbors
 
-            # if we have the complete file, choose randomly among interested
+            # if we have the complete file, choose randomly among interested, else: choose highest download rate
             if self.have_complete_fn():
                 chosen = [pid for pid, _ in random.sample(available, min(k, len(available)))]
             else:
@@ -90,11 +98,12 @@ class ChokeManager:
             self.preferred_neighbors = new_set
             log(self.peer_id, f"has the preferred neighbors {', '.join(map(str, sorted(list(new_set))))}.")
 
+    # randomly select peer new peer (MUST BE CHOKED, INTERETESTED)
     def _select_optimistic_neighbor(self):
         with self.lock:
             if(self.optimistic_neighbor is not None 
                and self.optimistic_neighbor not in self.preferred_neighbors 
-               and self.preferred_neighbor in self.conn_map
+               and self.optimistic_neighbor in self.conn_map
             ):
                 try:
                     send_message(self.conn_map[self.optimistic_neighbor], CHOKE)

@@ -5,6 +5,7 @@ class FileManager:
         self.file_path = file_path
         self.piece_size = piece_size
 
+    # breaks file down into chunks, returns list filed w/ chunks
     def split_file(self) -> list:
         pieces = []
         if not os.path.exists(self.file_path):
@@ -18,7 +19,9 @@ class FileManager:
         return pieces
 
     def write_piece(self, index: int, data: bytes):
+        # creates dir if doesnt exist
         os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+        # creates file if doesnt exist
         if not os.path.exists(self.file_path):
             with open(self.file_path, 'wb') as f:
                 pass
@@ -26,13 +29,16 @@ class FileManager:
             f.seek(index * self.piece_size)
             f.write(data)
 
+    # retrieves piece from file at given index
     def get_piece(self, index: int) -> bytes:
         if not os.path.exists(self.file_path):
             return b""
         with open(self.file_path, 'rb') as f:
+            # update pointer
             f.seek(index * self.piece_size)
             return f.read(self.piece_size)
 
+    # checks if file is finished by comparing sizes
     def is_complete(self, total_pieces: int) -> bool:
         if not os.path.exists(self.file_path):
             return False

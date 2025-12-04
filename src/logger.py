@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 
+# ensures parent directory exists (for log)
 def _ensure_log_dir():
     parent = os.path.abspath("..")
     if not os.path.exists(parent):
@@ -9,6 +10,7 @@ def _ensure_log_dir():
         except Exception:
             pass
 
+# logs to file for each peer 
 def log(peer_id: int, message: str):
     _ensure_log_dir()
     time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
